@@ -24,7 +24,7 @@
 #
 # MQTT client wrapper for sky remote control 
 
-from sky.skyremote import SkyRemote
+from .skyremote import SkyRemote
 import paho.mqtt.client as mqtt
 
 class Sky():
