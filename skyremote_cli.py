@@ -1,5 +1,5 @@
 import sys
-import SkyRemote
+from skyremote import SkyRemote
 
 if __name__ == '__main__':
 	sky = SkyRemote("192.168.1.194")
