@@ -26,6 +26,7 @@
 
 from skyremote import SkyRemote
 import paho.mqtt.client as mqtt
+import os
 
 class Sky():
   def __init__(self, ipaddr):
@@ -90,9 +91,12 @@ class Sky():
     self.client.loop_forever()
 
 if __name__ == '__main__':
-  sky = Sky("192.168.1.194")
-  broker = '192.168.1.206'
-  port = 1883
+  SKYREMOTE_IP = os.getenv('SKYREMOTE_IP')
+  MOSQUITTO_IP = os.getenv('MOSQUITTO_IP')
+  MOSQUITTO_PORT = int(os.getenv('MOSQUITTO_PORT'))
+  sky = Sky(SKYREMOTE_IP)
+  broker = MOSQUITTO_IP
+  port = MOSQUITTO_PORT
   topic = sky.subscribe_topic
   client_id = 'mqtt_sky'
   sky.run()
