@@ -25,3 +25,9 @@ python3.12.exe skyremote_cli.py red
 ```
 
 etc.
+
+## Building
+docker build -t mqtt_sky .
+
+## Running
+docker-compose up -d
