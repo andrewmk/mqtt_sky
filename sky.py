@@ -91,7 +91,7 @@ class Sky():
     self.client.loop_forever()
 
 if __name__ == '__main__':
-  SKYBOX_IP = os.getenv('SKYREMOTE_IP')
+  SKYBOX_IP = os.getenv('SKYBOX_IP')
   MOSQUITTO_IP = os.getenv('MOSQUITTO_IP')
   MOSQUITTO_PORT = int(os.getenv('MOSQUITTO_PORT'))
   sky = Sky(SKYBOX_IP)
