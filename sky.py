@@ -24,50 +24,75 @@
 #
 # MQTT client wrapper for sky remote control 
 
-from .skyremote import SkyRemote
+from skyremote import SkyRemote
 import paho.mqtt.client as mqtt
 
 class Sky():
-	def __init__(self, base_topic, ipaddr):
-		self.base_topic = base_topic + "/sky"
-		self.subscribe_topic = self.base_topic + "/#"
-		self.remote_topic = self.base_topic + "/remote"
-		self.set_state_topic = self.base_topic + "/set-state"
-		self.status_topic = self.base_topic + "/status"
-		self.state = "Off"
-		self.sky = SkyRemote(ipaddr)
+  def __init__(self, ipaddr):
+    self.base_topic = "sky"
+    self.subscribe_topic = self.base_topic + "/#"
+    self.remote_topic = self.base_topic + "/remote"
+    self.set_state_topic = self.base_topic + "/set-state"
+    self.status_topic = self.base_topic + "/status"
+    self.state = "Off"
+    self.sky = SkyRemote(ipaddr)
 
-	def publish_status(self, client):
-		json = '{{"state":"{state}" }}'.format(state = self.state)
-		client.publish(self.status_topic, payload = json, retain = True)
+  def publish_status(self, client):
+    json = '{{"state":"{state}" }}'.format(state = self.state)
+    client.publish(self.status_topic, payload = json, retain = True)
 
-	def set_state(self, state):
-		print("Setting sky box to " + state)
-		if self.state == state:
-			return
-		if state == "Off":
-			self.sky.press("power_off")
-			pass
-		elif state == "On":
-			self.sky.press("power_on")
-			pass
-		else:
-			print("Unknown state: " + state)
-		self.state = state
+  def set_state(self, state):
+    state = state.decode("utf-8")
+    print("Setting sky box to " + state)
+    if self.state == state:
+      return
+    if state == "Off":
+      self.sky.press("power_off")
+      pass
+    elif state == "On":
+      self.sky.press("power_on")
+      pass
+    else:
+      print("Unknown state: " + state)
+    self.state = state
 
-	def on_message(self, client, userdata, msg, payload):
-		if msg.topic == self.remote_topic:
-			self.sky.press(payload)
-		elif msg.topic == self.set_state_topic:
-			self.set_state(payload)
-			self.publish_status(client)
-		elif msg.topic == self.status_topic:
-			pass
-		else:
-			print("Unknown topic: " + msg.topic)
+  def on_message(self, client, userdata, message):
+    if message.topic == self.remote_topic:
+      self.sky.press(message.payload.decode('utf-8'))
+    elif message.topic == self.set_state_topic:
+      self.set_state(message.payload)
+      self.publish_status(client)
+    elif message.topic == self.status_topic:
+      pass
+    else:
+      print("Unknown topic: " + message.topic)
 
-	def on_connect(self, client, userdata, flags, rc):
-		self.publish_status(client)
+  def on_connect(self, client, userdata, flags, rc):
+    if rc == 0:
+      print("Connected to MQTT Broker!")
+      self.subscribe(self.client)
+      self.publish_status(self.client)
+    else:
+      print("Failed to connect, return code %d\n", rc)
+    
+  def subscribe(self, client: mqtt):
+    self.client.subscribe(topic)
+    self.client.on_message = sky.on_message
 
-#{"automation_type":"trigger","topic":"sky/remote","type":"button_short_press","subtype":"1","device":{"name":"Sky Remote"}}
+  def connect_mqtt(self) -> mqtt:
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1, client_id)
+    client.on_connect = sky.on_connect
+    client.connect(broker, port)
+    return client
 
+  def run(self):
+    self.client = sky.connect_mqtt()
+    self.client.loop_forever()
+
+if __name__ == '__main__':
+  sky = Sky("192.168.1.194")
+  broker = '192.168.1.206'
+  port = 1883
+  topic = sky.subscribe_topic
+  client_id = 'mqtt_sky'
+  sky.run()

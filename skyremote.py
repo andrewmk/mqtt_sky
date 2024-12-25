@@ -76,6 +76,7 @@ meta_commands = {
 	"power_on": ["sky"],
 	"power_off": ["sky", "power"],
 	"planner" : ["tvguide", "green"],
+	"subtitles" : ["help", "down", "right", "select"],
 	"channel" : ["sky"], # Prefix to send before entering a channel number
 	"bbc1": ["channel", 115],
 }
@@ -174,6 +175,6 @@ class SkyRemote():
 
 if __name__ == '__main__':
 	# Example usage...
-	sky = SkyRemote("192.168.100.65")
+	sky = SkyRemote("192.168.1.194")
 	sky.press("sky")
 	sky.press("tvguide")
