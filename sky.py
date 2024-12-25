@@ -91,10 +91,10 @@ class Sky():
     self.client.loop_forever()
 
 if __name__ == '__main__':
-  SKYREMOTE_IP = os.getenv('SKYREMOTE_IP')
+  SKYBOX_IP = os.getenv('SKYREMOTE_IP')
   MOSQUITTO_IP = os.getenv('MOSQUITTO_IP')
   MOSQUITTO_PORT = int(os.getenv('MOSQUITTO_PORT'))
-  sky = Sky(SKYREMOTE_IP)
+  sky = Sky(SKYBOX_IP)
   broker = MOSQUITTO_IP
   port = MOSQUITTO_PORT
   topic = sky.subscribe_topic
